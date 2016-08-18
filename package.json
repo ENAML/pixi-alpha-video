@@ -1,0 +1,36 @@
+{
+  "name": "pixi-alpha-video",
+  "version": "1.0.0",
+  "description": "videos with alpha transparency in pixi.js",
+  "main": "index.js",
+  "browserify": {
+    "transform": [
+      "glslify",
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
+  "scripts": {
+    "test": "npm run test-dev & npm run test-serve",
+    "test-dev": "watchify test/source/index.js -o test/main.js -v -d",
+    "test-serve": "cd ./test/ && Python -m SimpleHTTPServer",
+    "exampleUsage": "watchify -t glslify main.js -o app.js -v -d"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-preset-es2015": "^6.13.2",
+    "babelify": "^7.3.0",
+    "browserify-versionify": "^1.0.6",
+    "glslify": "^5.1.0",
+    "pixi.js": "^4.0.0-rc3",
+    "watchify": "^3.7.0"
+  }
+}
