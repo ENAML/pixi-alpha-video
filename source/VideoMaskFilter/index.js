@@ -14,14 +14,20 @@ var fShader = glslify('./shaders/frag.glsl');
  * @memberof PIXI
  * @param sprite {PIXI.Sprite} the target sprite
  */
-function VideoMaskFilter(sprite) {
+function VideoMaskFilter(maskSprite) {
+
+    var maskMatrix = new PIXI.Matrix();
+    
 
     PIXI.Filter.call(this,vShader, fShader);
 
-    this.sprite = sprite;
+    maskSprite.renderable = false;
 
-    // this seems to work for `compressed.mp4`
-    this.yOffset = -22;
+    this.maskSprite = maskSprite;
+    this.maskMatrix = maskMatrix;
+
+    // // this seems to work for `compressed.mp4`
+    // this.yOffset = -23;
 }
 VideoMaskFilter.prototype = Object.create(PIXI.Filter.prototype);
 VideoMaskFilter.prototype.constructor = VideoMaskFilter;
@@ -34,16 +40,24 @@ module.exports = VideoMaskFilter;
  * @param input {PIXI.RenderTarget}
  * @param output {PIXI.RenderTarget}
  */
-VideoMaskFilter.prototype.apply = function(filterManager, input, output, clear) {
+VideoMaskFilter.prototype.apply = function(filterManager, input, output) {
+
+
+  var maskSprite = this.maskSprite;
+
+  this.uniforms.mask = maskSprite._texture;
+
+  var otherMatrix = filterManager.calculateSpriteMatrix(
+    this.maskMatrix, maskSprite );
+
+  this.uniforms.otherMatrix = otherMatrix;
 
   //
   //  set filter area
   // 
   var vidDimensions = this.uniforms.vidDimensions;
-  vidDimensions[0] = this.sprite.width;
-  vidDimensions[1] = this.sprite.height;
-  vidDimensions[2] = this.sprite.x;
-  vidDimensions[3] = this.sprite.y;
+  vidDimensions[0] = this.maskSprite.width;
+  vidDimensions[1] = this.maskSprite.height * 2;
 
 
   // debugger;
@@ -67,6 +81,7 @@ Object.defineProperties(VideoMaskFilter.prototype, {
         this.uniforms.yOffset = value;
       }
     }
+
 });
 
 module.exports = VideoMaskFilter;

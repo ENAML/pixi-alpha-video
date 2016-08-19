@@ -134,6 +134,8 @@ class TestApp {
 
 
     this.stage.addChild(this.video.sprite);
+
+    // this.stage.addChild(this.video.maskSprite);
     
     this.tickBound();
   }

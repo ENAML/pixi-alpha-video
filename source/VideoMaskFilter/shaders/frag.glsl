@@ -9,14 +9,18 @@ precision lowp float;
 varying vec2 vTextureCoord;
 varying vec4 vColor;
 
-
-uniform vec4 vidDimensions;
+uniform vec2 vidDimensions; // dimensions of the FULL video texture (including top RGB panel and bottom Alpha panel)
 
 uniform float yOffset;
+
+uniform sampler2D mask;
+varying vec2 vMaskCoord;
 
 // set by PIXI
 uniform sampler2D uSampler;
 // uniform vec4 filterArea; 
+
+
 
 void main(void)
 {
@@ -35,7 +39,10 @@ void main(void)
   // if (vTextureCoord.y > halfHeight) discard;
 
   vec4 colorPx = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));
-  vec4 alphaPx = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + halfHeight)); // STPQ (texture coord syntax)
+
+  // vec4 alphaPx = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + halfHeight)); // STPQ (texture coord syntax)
+
+  vec4 alphaPx = texture2D(mask, vec2(vMaskCoord.x, vMaskCoord.y + halfHeight));
 
   float alpha = alphaPx.r; //(alphaPx.r + alphaPx.g + alphaPx.b) / 3.0;
 
@@ -54,7 +61,7 @@ void main(void)
   /**
    * just show the alpha half
    */
-  // gl_FragColor = alphaPx; // <- just the alpha
+  // gl_FragColor = alphaPx;
   
   /**
    * actual working version
