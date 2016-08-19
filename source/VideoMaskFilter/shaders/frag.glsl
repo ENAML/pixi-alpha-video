@@ -9,11 +9,14 @@ precision lowp float;
 varying vec2 vTextureCoord;
 varying vec4 vColor;
 
-uniform sampler2D uSampler;
 
 uniform vec4 vidDimensions;
 
 uniform float yOffset;
+
+// set by PIXI
+uniform sampler2D uSampler;
+// uniform vec4 filterArea; 
 
 void main(void)
 {
