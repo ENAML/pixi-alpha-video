@@ -27,13 +27,13 @@ class TestApp {
     // get screen dimensions
     this.screen = {
       w: window.innerWidth,
-      h: window.innerH,
+      h: window.innerHeight,
     };
 
     // init PIXI
     this.renderer = new PIXI.WebGLRenderer(this.screen.w, this.screen.h, {
-      // backgroundColor : 0xffffff,
-      transparent: true,
+      backgroundColor : 0xffffff,
+      // transparent: true,
       antialias: true,
       forceFXAA: true,
     });
@@ -95,18 +95,32 @@ class TestApp {
   }
 
   listen() {
+    var ctx = this;
+
     document.body.addEventListener('click', (e) => {
-      this.setBackgroundColor();
+      ctx.setBackgroundColor.call(ctx);
     });
   }
 
   setBackgroundColor() {
-    document.body.style.backgroundColor =
-      BG_COLORS[++bgColorIndex % BG_COLORS.length];
+
+    var randomColor = getRandomColor();
+
+    this.background.clear();
+    this.background.beginFill(randomColor); 
+    this.background.lineStyle(1, 0xffffff, 0);
+    this.background.drawRect(0, 0, this.screen.w, this.screen.h);
+    this.background.endFill();
   }
 
   start() {
-    
+
+    // create background
+    this.background = new PIXI.Graphics();
+    this.stage.addChild(this.background);
+    this.setBackgroundColor();
+
+
     this.stage.addChild(this.video.sprite);
     
     this.tickBound();
@@ -117,6 +131,20 @@ class TestApp {
 
     this.renderer.render(this.stage);
   }
+}
+
+// 
+// returns random color in either decimals or as a hex string
+// 
+// Explanation:
+// - http://www.paulirish.com/2009/random-hex-color-code-snippets/
+// - http://www.daverabideau.com/blog/randomly-generated-hex-codes-in-javascript/
+// 
+function getRandomColor(toHexString) {
+  var randomColorDecimal = Math.floor(Math.random()*16777215);
+
+  return toHexString ?
+    '#' + randomColorDecimal.toString(16) : randomColorDecimal;
 }
 
 // start it up

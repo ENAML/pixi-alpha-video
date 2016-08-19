@@ -31,11 +31,13 @@ class Video {
   }
 
   addFilter() {
-    this.sprite.filters = [new VideoMaskFilter()];
+    this.filter = new VideoMaskFilter();
+    this.sprite.filters = [this.filter];
   }
 
   removeFilter() {
     this.sprite.filters = null;
+    this.filter = null;
   }
 }
 
