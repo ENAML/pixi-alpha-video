@@ -51,7 +51,7 @@ void main(void)
 
   float offsetHeight = yOffset + vidDimensions.y;
 
-  float filterHeight = vidDimensions.y * onePixel.y;
+  float filterHeight = offsetHeight * onePixel.y;
   float halfHeight = filterHeight / 2.0;
 
   float alphaPixelY = vTextureCoord.y + (halfHeight * onePixel.y);

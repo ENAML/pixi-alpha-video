@@ -1,3 +1,3 @@
 'use strict';
 
-require('./VideoMaskFilter');
+module.exports = require('./AlphaVideoSprite');

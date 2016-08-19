@@ -4,7 +4,7 @@
 const PIXI = require('pixi.js');
 
 // modules
-const Video = require('./Video');
+const AlphaVideoSprite = require('../../source/AlphaVideoSprite');
 
 
 const BG_COLORS = [
@@ -75,7 +75,7 @@ class TestApp {
       errEvtEl.removeEventListener('error', onError);
 
       // create video
-      ctx.videoSprite = new Video(texture);
+      ctx.videoSprite = new AlphaVideoSprite(texture);
 
       // start it up!
       ctx.start.call(ctx);

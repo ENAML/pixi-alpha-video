@@ -1,6 +1,6 @@
 'use strict';
 
-const VideoMaskFilter = require('../../../source/VideoMaskFilter');
+const VideoMaskFilter = require('./VideoMaskFilter');
 
 
 class Video extends PIXI.Sprite {
