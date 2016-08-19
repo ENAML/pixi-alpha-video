@@ -11,17 +11,16 @@ varying vec4 vColor;
 
 uniform sampler2D uSampler;
 
-uniform sampler2D mask;
-uniform vec4 filterArea;
+uniform vec4 vidDimensions;
 
 uniform float yOffset;
 
 void main(void)
 {
 
-  vec2 onePixel = vec2(1.0 / filterArea);
+  vec2 onePixel = vec2(1.0 / vidDimensions);
 
-  float offsetHeight = yOffset + filterArea.y; // using this for testing
+  float offsetHeight = yOffset + vidDimensions.y; // using this for testing
 
   float filterHeight = offsetHeight * onePixel.y;
   float halfHeight = filterHeight / 2.0;
@@ -37,12 +36,27 @@ void main(void)
 
   float alpha = alphaPx.r; //(alphaPx.r + alphaPx.g + alphaPx.b) / 3.0;
 
-  gl_FragColor = vec4(colorPx.rgb * alpha, alpha);
-
+  /**
+   * pixel alpha is based on Y position (top is `0`, bottom is `1`)
+   */
   // float pctDown = vTextureCoord.y / filterHeight;
   // color *= pctDown;
   // gl_FragColor = vec4(colorPx.rgb, pctDown);
 
-  // gl_FragColor = colorPx; // <- just the video in it's original state
+  /**
+   * just the video in it's original state
+   */
+  // gl_FragColor = colorPx;
+  
+  /**
+   * just show the alpha half
+   */
   // gl_FragColor = alphaPx; // <- just the alpha
+  
+  /**
+   * actual working version
+   */
+  gl_FragColor = vec4(colorPx.rgb * alpha, alpha);
+
+
 }

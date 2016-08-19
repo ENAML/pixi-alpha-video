@@ -16,24 +16,12 @@ var fShader = glslify('./shaders/frag.glsl');
  */
 function VideoMaskFilter(sprite) {
 
-    var maskMatrix = new PIXI.Matrix();
+    PIXI.Filter.call(this,vShader, fShader);
 
-    PIXI.Filter.call(this,
-        vShader, fShader,
-        {
-            // mask:           { type: 'sampler2D', value: sprite._texture },
-            alpha:          { type: 'f', value: 1},
-            otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) },
+    this.sprite = sprite;
 
-            // filterArea:     { type: '4fv', value: new Float32Array([0, 0, 0, 0])},
-            
-            // -24 seems good for 'compressed.mp4' -- see `vert.glsl`
-            yOffset:          { type: 'f', value: -24},
-        }
-    );
-
-    // this.maskSprite = sprite;
-    this.maskMatrix = maskMatrix;
+    // this seems to work for `compressed.mp4`
+    this.yOffset = -22;
 }
 VideoMaskFilter.prototype = Object.create(PIXI.Filter.prototype);
 VideoMaskFilter.prototype.constructor = VideoMaskFilter;
@@ -46,42 +34,26 @@ module.exports = VideoMaskFilter;
  * @param input {PIXI.RenderTarget}
  * @param output {PIXI.RenderTarget}
  */
-VideoMaskFilter.prototype.applyFilter = function (renderer, input, output) {
-
-  var filterManager = renderer.filterManager;
-
-  this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
-  // this.uniforms.alpha.value = this.maskSprite.worldAlpha;
+VideoMaskFilter.prototype.apply = function(filterManager, input, output, clear) {
 
   //
   //  set filter area
-  //  
-  // var inputFrame = input.frame;
-  // var filterArea = this.uniforms.filterArea.value;
-  // filterArea[0] = inputFrame.width;
-  // filterArea[1] = inputFrame.height;
-  // filterArea[2] = inputFrame.x;
-  // filterArea[3] = inputFrame.y;
+  // 
+  var vidDimensions = this.uniforms.vidDimensions;
+  vidDimensions[0] = this.sprite.width;
+  vidDimensions[1] = this.sprite.height;
+  vidDimensions[2] = this.sprite.x;
+  vidDimensions[3] = this.sprite.y;
 
-  var shader = this.getShader(renderer);
+
+  // debugger;
 
    // draw the filter...
-  filterManager.applyFilter(shader, input, output);
+  filterManager.applyFilter(this, input, output);
 };
 
 
 Object.defineProperties(VideoMaskFilter.prototype, {
-    /**
-     * The texture used for the displacement map. Must be power of 2 sized texture.
-     */
-    map: {
-        get: function (){
-            return this.uniforms.mask.value;
-        },
-        set: function (value){
-            this.uniforms.mask.value = value;
-        }
-    },
 
 
     /**
@@ -89,10 +61,10 @@ Object.defineProperties(VideoMaskFilter.prototype, {
      */
     yOffset: {
       get: function() {
-        return this.uniforms.yOffset.value;
+        return this.uniforms.yOffset;
       },
       set: function(value) {
-        this.uniforms.yOffset.value = value;
+        this.uniforms.yOffset = value;
       }
     }
 });

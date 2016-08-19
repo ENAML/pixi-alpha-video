@@ -97,17 +97,29 @@ class TestApp {
   listen() {
     var ctx = this;
 
+    window.addEventListener('resize', (e) => {
+      ctx.resize.call(this);
+    });
+
     document.body.addEventListener('click', (e) => {
       ctx.setBackgroundColor.call(ctx);
     });
   }
 
-  setBackgroundColor() {
+  resize() {
+    this.screen.w = window.innerWidth;
+    this.screen.h = window.innerHeight;
+  
+    this.renderer.resize(this.screen.w, this.screen.h);   
+    this.setBackgroundColor(this.backgroundColor);
+  }
 
-    var randomColor = getRandomColor();
+  setBackgroundColor(color) {
+
+    this.backgroundColor = color || getRandomColor();
 
     this.background.clear();
-    this.background.beginFill(randomColor); 
+    this.background.beginFill(this.backgroundColor); 
     this.background.lineStyle(1, 0xffffff, 0);
     this.background.drawRect(0, 0, this.screen.w, this.screen.h);
     this.background.endFill();

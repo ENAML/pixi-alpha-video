@@ -31,7 +31,7 @@ class Video {
   }
 
   addFilter() {
-    this.filter = new VideoMaskFilter();
+    this.filter = new VideoMaskFilter(this.sprite);
     this.sprite.filters = [this.filter];
   }
 
