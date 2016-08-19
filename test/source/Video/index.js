@@ -2,21 +2,22 @@
 
 const VideoMaskFilter = require('../../../source/VideoMaskFilter');
 
-class Video {
-  constructor(videoTexture) {
+
+class Video extends PIXI.Sprite {
+  constructor(videoFullTexture) {
+
+    super();
 
     // set pixi / dom elements
-    this.baseTexture = videoTexture;
-    this.srcEl = this.baseTexture.baseTexture.source;
-
-    // for easier access to w & h
-    this.srcWidth = this.srcEl.videoWidth;
-    this.srcHeight = this.srcEl.videoHeight;
+    this._fullTexture = videoFullTexture;
+    this._srcEl = this._fullTexture.baseTexture.source;
 
     // make sure it loops
-    this.srcEl.loop = true;
+    this._srcEl.loop = true;
 
     this.setup();
+    this.setFilter();
+    this.shimScaleCallback();
   }
 
   setup() {
@@ -24,37 +25,75 @@ class Video {
     var newWidth = this.srcWidth;
     var newHeight = this.srcHeight / 2;
 
-    // create new textures
-    this.maskedTexture = new PIXI.Texture(
-     this.baseTexture, new PIXI.Rectangle(0, 0, newWidth, newHeight));
+    // set this sprite's texture
+    this.texture = new PIXI.Texture(
+     this._fullTexture, new PIXI.Rectangle(0, 0, newWidth, newHeight));
+
+    // set mask texture
     this.maskTexture = new PIXI.Texture(
-     this.baseTexture, new PIXI.Rectangle(0, newHeight, newWidth, newHeight));
+     this._fullTexture, new PIXI.Rectangle(0, newHeight, newWidth, newHeight));
 
-    this.sprite = new PIXI.Sprite(this.maskedTexture);
+    // create mask sprite and add as child of this sprite
     this.maskSprite = new PIXI.Sprite(this.maskTexture);
-
-    this.sprite.addChild(this.maskSprite);
-
-    this.addFilter();
-
-    // // create new sprite
-    // this.sprite = new PIXI.Sprite(this.baseTexture);
-
-    // this.addFilter();
+    this.addChild(this.maskSprite);
   }
 
   listen() {
 
   }
 
-  addFilter() {
-    this.filter = new VideoMaskFilter(this.maskSprite);
-    this.sprite.filters = [this.filter];
+  setFilter() {
+    var filter = new VideoMaskFilter(this, this.maskSprite);
+
+    this.filter = filter;
+    this.filters = [this.filter];
+    
+    return filter;
   }
 
   removeFilter() {
-    this.sprite.filters = null;
+    var filter = this.sprite.filter;
+
+    this.filters = null;
     this.filter = null;
+
+    return filter;
+  }
+
+  // 
+  // kinda hacky but this allows us
+  // to be notified when the width / height / scale
+  // changes so we can modify the filter dimensions to
+  // reflect that change
+  // 
+  // (see `ObservablePoint.js` and `TransformStatic.js`s
+  // `onChange` method in the PIXI src)
+  // 
+  shimScaleCallback() {
+
+    var spriteScope = this;
+    var scaleScope = this.scale.scope;
+
+    var oldCB = this.scale.cb;
+
+    var newCB = function() {
+      oldCB.call(scaleScope);
+
+      // add stuff here if needed
+      spriteScope.filter.setDimensions();
+    }
+
+    this.scale.cb = newCB;
+  }
+
+  // 
+  // for easier access to w & h
+  // 
+  get srcWidth() {
+    return this._srcEl.videoWidth;
+  }
+  get srcHeight() {
+    return this._srcEl.videoHeight;
   }
 }
 

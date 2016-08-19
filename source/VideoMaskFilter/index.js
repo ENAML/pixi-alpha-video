@@ -14,7 +14,7 @@ var fShader = glslify('./shaders/frag.glsl');
  * @memberof PIXI
  * @param sprite {PIXI.Sprite} the target sprite
  */
-function VideoMaskFilter(maskSprite) {
+function VideoMaskFilter(maskedSprite, maskSprite) {
 
     var maskMatrix = new PIXI.Matrix();
     
@@ -23,10 +23,12 @@ function VideoMaskFilter(maskSprite) {
 
     maskSprite.renderable = false;
 
+    this.maskedSprite = maskedSprite;
     this.maskSprite = maskSprite;
     this.maskMatrix = maskMatrix;
 
-    // // this seems to work for `compressed.mp4`
+    this.setDimensions();
+
     // this.yOffset = -23;
 }
 VideoMaskFilter.prototype = Object.create(PIXI.Filter.prototype);
@@ -35,10 +37,6 @@ module.exports = VideoMaskFilter;
 
 /**
  * Applies the filter
- *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
- * @param input {PIXI.RenderTarget}
- * @param output {PIXI.RenderTarget}
  */
 VideoMaskFilter.prototype.apply = function(filterManager, input, output) {
 
@@ -52,20 +50,20 @@ VideoMaskFilter.prototype.apply = function(filterManager, input, output) {
 
   this.uniforms.otherMatrix = otherMatrix;
 
-  //
-  //  set filter area
-  // 
-  var vidDimensions = this.uniforms.vidDimensions;
-  vidDimensions[0] = this.maskSprite.width;
-  vidDimensions[1] = this.maskSprite.height * 2;
-
-
-  // debugger;
-
    // draw the filter...
   filterManager.applyFilter(this, input, output);
 };
 
+/**
+ * TODO: test if this actually is doing anything
+ * (it seems as if giving the vidDimensions a value of `0` 
+ * breaks things but passing arbitrary values in also seems to work...)
+ */
+VideoMaskFilter.prototype.setDimensions = function() {
+  var vidDimensions = this.uniforms.vidDimensions;
+  vidDimensions[0] = this.maskedSprite.width;
+  vidDimensions[1] = this.maskedSprite.height * 2;
+};
 
 Object.defineProperties(VideoMaskFilter.prototype, {
 

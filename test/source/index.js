@@ -22,7 +22,7 @@ class TestApp {
   constructor() {
 
     // init vars
-    this.video = null;
+    this.videoSprite = null;
 
     // get screen dimensions
     this.screen = {
@@ -75,7 +75,7 @@ class TestApp {
       errEvtEl.removeEventListener('error', onError);
 
       // create video
-      ctx.video = new Video(texture);
+      ctx.videoSprite = new Video(texture);
 
       // start it up!
       ctx.start.call(ctx);
@@ -133,9 +133,7 @@ class TestApp {
     this.setBackgroundColor();
 
 
-    this.stage.addChild(this.video.sprite);
-
-    // this.stage.addChild(this.video.maskSprite);
+    this.stage.addChild(this.videoSprite);
     
     this.tickBound();
   }
