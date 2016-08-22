@@ -18,6 +18,7 @@
   },
   "scripts": {
     "build": "browserify source/index.js -o dist/main.js -v -d",
+    "build-min": "uglifyjs dist/main.js --output=dist/main.min.js --source-map=dist/main.min.js.map",
     "test": "npm run test-dev & npm run test-serve",
     "test-dev": "watchify test/source/index.js -o test/main.js -v -d",
     "test-serve": "cd ./test/ && Python -m SimpleHTTPServer",
@@ -33,5 +34,8 @@
     "glslify": "^5.1.0",
     "pixi.js": "^4.0.0-rc3",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "uglify-js": "^2.7.3"
   }
 }
