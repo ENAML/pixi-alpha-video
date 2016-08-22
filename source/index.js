@@ -1,3 +1,5 @@
 'use strict';
 
-module.exports = require('./AlphaVideoSprite');
+const AlphaVideoSprite = require('./AlphaVideoSprite');
+
+module.exports = AlphaVideoSprite;
