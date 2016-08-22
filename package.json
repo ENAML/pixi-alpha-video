@@ -2,7 +2,7 @@
   "name": "pixi-alpha-video",
   "version": "1.0.0",
   "description": "videos with alpha transparency in pixi.js",
-  "main": "index.js",
+  "main": "dist/main.js",
   "browserify": {
     "transform": [
       "glslify",
