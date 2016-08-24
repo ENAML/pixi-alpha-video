@@ -3,7 +3,7 @@
 const VideoMaskFilter = require('./VideoMaskFilter');
 
 
-class Video extends PIXI.Sprite {
+class AlphaVideoSprite extends PIXI.Sprite {
   constructor(videoFullTexture) {
 
     super();
@@ -97,4 +97,4 @@ class Video extends PIXI.Sprite {
   }
 }
 
-module.exports = Video;
+module.exports = AlphaVideoSprite;

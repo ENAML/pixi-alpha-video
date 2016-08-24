@@ -17,7 +17,6 @@ var fShader = glslify('./shaders/frag.glsl');
 function VideoMaskFilter(maskedSprite, maskSprite) {
 
     var maskMatrix = new PIXI.Matrix();
-    
 
     PIXI.Filter.call(this,vShader, fShader);
 
