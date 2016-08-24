@@ -4,7 +4,7 @@ const VideoMaskFilter = require('./VideoMaskFilter');
 
 
 class AlphaVideoSprite extends PIXI.Sprite {
-  constructor(videoFullTexture) {
+  constructor(videoFullTexture, autoUpdateVideoTexture) {
 
     super();
 
@@ -12,10 +12,16 @@ class AlphaVideoSprite extends PIXI.Sprite {
     this._fullTexture = videoFullTexture;
     this._srcEl = this._fullTexture.baseTexture.source;
 
+    // set whether the baseTexture updates in it's on RAF loop or
+    // if we should use this class' update method to update it
+    // from some external loop (probably a `main loop`)
+    autoUpdateVideoTexture = autoUpdateVideoTexture || false;
+    this._fullTexture.baseTexture.autoUpdate = autoUpdateVideoTexture;
+
     // make sure it loops
     this._srcEl.loop = true;
 
-    this.setup();
+    this.setup(autoUpdateVideoTexture);
     this.setFilter();
     this.shimScaleCallback();
   }
@@ -58,6 +64,14 @@ class AlphaVideoSprite extends PIXI.Sprite {
     this.filter = null;
 
     return filter;
+  }
+
+  // 
+  // Should only use this if not using `autoUpdate`
+  // (see constructor's `autoUpdateVideoTexture` parameter)
+  // 
+  update() {
+    this._fullTexture.baseTexture.update();
   }
 
   // 

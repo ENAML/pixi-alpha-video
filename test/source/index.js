@@ -6,6 +6,10 @@ const PIXI = require('pixi.js');
 // modules
 const AlphaVideoSprite = require('../../source/AlphaVideoSprite');
 
+const CONFIG = {
+  videoUrl: '/videos/claw.mp4', //'/videos/compressed.mp4',
+  verticalPadding: 200,
+}
 
 const BG_COLORS = [
   'white',
@@ -43,7 +47,7 @@ class TestApp {
     this.stage = new PIXI.Container();
 
     // bind run loop
-    this.tickBound = this.tick.bind(this);
+    this.proxyTick = this.tick.bind(this);
 
     // load video and then start
     this.loadVideo();
@@ -55,7 +59,7 @@ class TestApp {
   loadVideo(done) {
 
     // create texture (and begin loading asset)
-    var texture = PIXI.Texture.fromVideoUrl('/videos/compressed.mp4');
+    var texture = PIXI.Texture.fromVideoUrl(CONFIG.videoUrl);
 
     // get the html src el
     var srcEl = texture.baseTexture.source;
@@ -107,11 +111,40 @@ class TestApp {
   }
 
   resize() {
-    this.screen.w = window.innerWidth;
-    this.screen.h = window.innerHeight;
+    var bgW = this.screen.w = window.innerWidth;
+    var bgH = this.screen.h = window.innerHeight;
   
-    this.renderer.resize(this.screen.w, this.screen.h);   
+    this.renderer.resize(bgW, bgH);
+
+    this.positionVideoSprite(bgW, bgH);
+
     this.setBackgroundColor(this.backgroundColor);
+  }
+
+  positionVideoSprite(bgW, bgH) {
+    if (!this.videoSprite)
+      return;
+
+    // get background size
+    var bgW = bgW ||this.screen.w;
+    var bgH = bgH || this.screen.h;
+
+    // get video size (from srcEl)
+    var videoW = this.videoSprite.srcWidth;
+    var videoH = this.videoSprite.srcHeight / 2;
+
+    // scale video
+    var bgHPadded = Math.max(bgH - CONFIG.verticalPadding, 150); // min padded height of 150
+    var videoScale = bgHPadded / videoH;
+    this.videoSprite.scale.set(videoScale);
+
+    // get new video size
+    videoW = this.videoSprite.width;
+    videoH = this.videoSprite.height;
+
+    // center video
+    this.videoSprite.x = (bgW / 2) - (videoW / 2);
+    this.videoSprite.y = (bgH / 2) - (videoH / 2);
   }
 
   setBackgroundColor(color) {
@@ -135,11 +168,15 @@ class TestApp {
 
     this.stage.addChild(this.videoSprite);
     
-    this.tickBound();
+    this.resize();
+
+    this.proxyTick();
   }
 
   tick() {
-    requestAnimationFrame(this.tickBound);
+    requestAnimationFrame(this.proxyTick);
+
+    this.videoSprite.update();
 
     this.renderer.render(this.stage);
   }
