@@ -2,4 +2,4 @@
 
 const AlphaVideoSprite = require('./AlphaVideoSprite');
 
-module.exports = PIXI.AlphaVideoSprite = AlphaVideoSprite;
+module.exports = global.PIXI.AlphaVideoSprite = AlphaVideoSprite;
