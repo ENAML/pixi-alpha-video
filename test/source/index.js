@@ -108,6 +108,18 @@ class TestApp {
     document.body.addEventListener('click', (e) => {
       ctx.setBackgroundColor.call(ctx);
     });
+    document.body.addEventListener('keydown', (e) => {
+      var keyCode = e.keyCode;
+
+      if (keyCode === 66) // `b` for `black`
+      {
+        ctx.setBackgroundColor.call(ctx, 0x000000);
+      }
+      else if (keyCode === 87) // `w` for `white`
+      {
+        ctx.setBackgroundColor.call(ctx, 0xffffff);
+      }
+    })
   }
 
   resize() {
@@ -149,7 +161,7 @@ class TestApp {
 
   setBackgroundColor(color) {
 
-    this.backgroundColor = color || getRandomColor();
+    this.backgroundColor = typeof color === 'number' ? color : getRandomColor();
 
     this.background.clear();
     this.background.beginFill(this.backgroundColor); 

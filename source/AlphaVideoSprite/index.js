@@ -21,9 +21,9 @@ class AlphaVideoSprite extends PIXI.Sprite {
     // make sure it loops
     this._srcEl.loop = true;
 
-    this.setup(autoUpdateVideoTexture);
+    this.setup();
     this.setFilter(filterPadding);
-    this.shimScaleCallback();
+    // this.shimScaleCallback();
   }
 
   setup() {
@@ -31,13 +31,27 @@ class AlphaVideoSprite extends PIXI.Sprite {
     var newWidth = this.srcWidth;
     var newHeight = this.srcHeight / 2;
 
+    // create canvases
+    this._maskedCanvas = document.createElement('canvas');
+    this._maskCanvas = document.createElement('canvas');
+
+    // create contexts
+    this._maskedCtx = this._maskedCanvas.getContext('2d');
+    this._maskCtx = this._maskCanvas.getContext('2d');
+
+    // set canvas sizes
+    this._maskedCanvas.width = this._maskCanvas.width = newWidth;
+    this._maskedCanvas.height = this._maskCanvas.height = newHeight;
+
     // set this sprite's texture
-    this.texture = new PIXI.Texture(
-     this._fullTexture, new PIXI.Rectangle(0, 0, newWidth, newHeight));
+    // this.texture = new PIXI.Texture(
+    //  this._fullTexture, new PIXI.Rectangle(0, 0, newWidth, newHeight));
+    this.texture = PIXI.Texture.fromCanvas(this._maskedCanvas)
 
     // set mask texture
-    this.maskTexture = new PIXI.Texture(
-     this._fullTexture, new PIXI.Rectangle(0, newHeight, newWidth, newHeight));
+    // this.maskTexture = new PIXI.Texture(
+    //  this._fullTexture, new PIXI.Rectangle(0, newHeight, newWidth, newHeight));
+    this.maskTexture = PIXI.Texture.fromCanvas(this._maskCanvas)
 
     // create mask sprite and add as child of this sprite
     this.maskSprite = new PIXI.Sprite(this.maskTexture);
@@ -49,24 +63,11 @@ class AlphaVideoSprite extends PIXI.Sprite {
   }
 
   setFilter(filterPadding) {
-    var filter = new VideoMaskFilter(this, this.maskSprite);
-
-    if (filterPadding)
-      filter.padding = filterPadding;
-
-    this.filter = filter;
-    this.filters = [this.filter];
-    
-    return filter;
+    this.mask = this.maskSprite;
   }
 
   removeFilter() {
-    var filter = this.sprite.filter;
 
-    this.filters = null;
-    this.filter = null;
-
-    return filter;
   }
 
   // 
@@ -74,7 +75,20 @@ class AlphaVideoSprite extends PIXI.Sprite {
   // (see constructor's `autoUpdateVideoTexture` parameter)
   // 
   update() {
-    this._fullTexture.baseTexture.update();
+    // this._fullTexture.baseTexture.update();
+
+    var video = this._srcEl;
+
+    var width = video.videoWidth;
+    var height = video.videoHeight / 2;
+
+    this._maskedCtx.drawImage(video, 0, 0, width, height, 0, 0,
+      this._maskedCanvas.width, this._maskedCanvas.height);
+    this.texture.baseTexture.update();
+
+    this._maskCtx.drawImage(video, 0, height, width, height, 0, 0,
+      this._maskCanvas.width, this._maskCanvas.height);
+    this.maskTexture.baseTexture.update();
   }
 
   // 
