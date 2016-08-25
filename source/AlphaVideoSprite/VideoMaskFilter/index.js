@@ -20,6 +20,8 @@ function VideoMaskFilter(maskedSprite, maskSprite) {
 
     PIXI.Filter.call(this,vShader, fShader);
 
+    this.padding = 0;
+
     maskSprite.renderable = false;
 
     this.maskedSprite = maskedSprite;
