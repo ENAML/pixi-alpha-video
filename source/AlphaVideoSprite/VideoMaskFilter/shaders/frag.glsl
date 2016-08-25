@@ -62,6 +62,13 @@ void main(void)
 
   float alpha = alphaPx.r;
 
+  // // check clip! this will stop the mask bleeding out from the edges
+  // vec2 text = abs( vMaskCoord - 0.5 );
+  // text = step(0.5, text);
+  // float clip = 1.0 - max(text.y, text.x);
+
+  // alpha *= clip;
+
   /**
    * pixel alpha is based on Y position (top is `0`, bottom is `1`)
    */
