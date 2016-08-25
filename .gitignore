@@ -17,3 +17,4 @@ source/queue-server/queue.json
 npm-debug.log
 *.pyc
 
+test/main.js
