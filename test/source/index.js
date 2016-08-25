@@ -7,8 +7,8 @@ const PIXI = require('pixi.js');
 const AlphaVideoSprite = require('../../source/AlphaVideoSprite');
 
 const CONFIG = {
-  videoUrl: '/videos/claw_med_test.mp4', //'/videos/compressed.mp4',
-  verticalPadding: 200,
+  videoUrl: '/videos/claw_large_test_3.mp4', //'/videos/compressed.mp4',
+  verticalPadding: 0,
 }
 
 const BG_COLORS = [
