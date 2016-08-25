@@ -7,6 +7,12 @@
 //   - dimensions of the FULL video texture 
 //     (including top RGB panel and bottom Alpha panel)
 // 
+// 2) (float) spriteAlpha
+//   - the current alpha of the alphaVideoSprite - need to
+//     multiply the computed alpha by this to get the actual
+//     alpha (NOTE: this is only important if video alpha is 
+//     NOT `0` or `1`).
+// 
 // 2) (float) yOffset 
 //   - alpha offset from y midpoint (height / 2.0). useful if
 //      RGB panel and Alpha panel in are different heights
@@ -39,6 +45,7 @@ varying vec2 vMaskCoord;
 varying vec4 vColor;
 
 uniform vec2 vidDimensions;
+uniform float spriteAlpha;
 uniform float yOffset;
 uniform sampler2D uSampler;
 uniform sampler2D mask;
@@ -60,7 +67,7 @@ void main(void)
   vec4 colorPx = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));
   vec4 alphaPx = texture2D(mask, vec2(vMaskCoord.x, vMaskCoord.y + halfHeight));
 
-  float alpha = alphaPx.r;
+  float alpha = alphaPx.r * spriteAlpha;
 
   // // check clip! this will stop the mask bleeding out from the edges
   // // might not need this after all

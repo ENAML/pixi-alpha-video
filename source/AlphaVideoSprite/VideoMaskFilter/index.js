@@ -68,6 +68,14 @@ VideoMaskFilter.prototype.setDimensions = function() {
 
 Object.defineProperties(VideoMaskFilter.prototype, {
 
+    spriteAlpha: {
+      get: function() {
+        return this.uniforms.spriteAlpha;
+      },
+      set: function(value) {
+        this.uniforms.spriteAlpha = value;
+      }
+    },
 
     /**
      * TEST

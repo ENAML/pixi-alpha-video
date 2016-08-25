@@ -2,6 +2,7 @@
 
 // libs
 const PIXI = require('pixi.js');
+const dat = require('dat-gui');
 
 // modules
 const AlphaVideoSprite = require('../../source/AlphaVideoSprite');
@@ -9,6 +10,7 @@ const AlphaVideoSprite = require('../../source/AlphaVideoSprite');
 const CONFIG = {
   videoUrl: '/videos/claw_medium_test.mp4', //'/videos/compressed.mp4',
   verticalPadding: 200,
+  videoAlpha: 1,
 }
 
 const BG_COLORS = [
@@ -105,7 +107,7 @@ class TestApp {
       ctx.resize.call(this);
     });
 
-    document.body.addEventListener('click', (e) => {
+    this.renderer.view.addEventListener('click', (e) => {
       ctx.setBackgroundColor.call(ctx);
     });
     document.body.addEventListener('keydown', (e) => {
@@ -182,6 +184,9 @@ class TestApp {
     
     this.resize();
 
+    if (window.guiController)
+      window.guiController.init(this);
+
     this.proxyTick();
   }
 
@@ -208,8 +213,27 @@ function getRandomColor(toHexString) {
     '#' + randomColorDecimal.toString(16) : randomColorDecimal;
 }
 
+
+class GuiController {
+  constructor() {
+    this.gui = new dat.GUI();
+  }
+
+  // called when video loads
+  init(testApp) {
+
+    this.gui.add(CONFIG, 'videoAlpha', 0, 1)
+    .onChange((val) => {
+
+      testApp.videoSprite.alpha = val;
+    });
+  }
+}
+
 // start it up
 window.addEventListener('load', function() {
 
   const testApp = window.testApp = new TestApp();
+
+  const guiController = window.guiController = new GuiController();
 });

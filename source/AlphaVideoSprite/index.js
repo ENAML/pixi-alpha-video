@@ -21,6 +21,10 @@ class AlphaVideoSprite extends PIXI.Sprite {
     // make sure it loops
     this._srcEl.loop = true;
 
+    // actual alpha value
+    // (accessed by `alpha` getter / setter)
+    this._alpha = 1;
+
     this.setup(autoUpdateVideoTexture);
     this.setFilter(filterPadding);
     this.shimScaleCallback();
@@ -42,6 +46,7 @@ class AlphaVideoSprite extends PIXI.Sprite {
     // create mask sprite and add as child of this sprite
     this.maskSprite = new PIXI.Sprite(this.maskTexture);
     this.addChild(this.maskSprite);
+
   }
 
   listen() {
@@ -49,7 +54,6 @@ class AlphaVideoSprite extends PIXI.Sprite {
   }
 
   setFilter(filterPadding) {
-    console.log(filterPadding);
     var filter = new VideoMaskFilter(this, this.maskSprite);
 
     if (filterPadding)
@@ -58,6 +62,8 @@ class AlphaVideoSprite extends PIXI.Sprite {
     this.filter = filter;
     this.filters = [this.filter];
     
+    this.alpha = this._alpha;
+
     return filter;
   }
 
@@ -128,6 +134,16 @@ class AlphaVideoSprite extends PIXI.Sprite {
     // do stuff here?
     //  
     super.height = value;
+  }
+
+  get alpha() {
+    return this._alpha;
+  }
+  set alpha(value) {
+    if (this.filter) {
+      this.filter.spriteAlpha = value;
+    }
+    this._alpha = value;
   }
 
   // 
