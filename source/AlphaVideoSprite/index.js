@@ -105,6 +105,32 @@ class AlphaVideoSprite extends PIXI.Sprite {
   }
 
   // 
+  // override PIXI.Sprite's `width` & `height` getters & setters
+  // 
+  // see:
+  // - http://stackoverflow.com/questions/28950760/override-a-setter-and-the-getter-must-also-be-overridden
+  // - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor
+  //
+  get width() {
+    return super.width;
+  }
+  set width(value) {
+    //
+    // do stuff here?
+    // 
+    super.width = value;
+  }
+  get height() {
+    return super.height;
+  }
+  set height(value) {
+    //
+    // do stuff here?
+    //  
+    super.height = value;
+  }
+
+  // 
   // for easier access to w & h
   // 
   get srcWidth() {
