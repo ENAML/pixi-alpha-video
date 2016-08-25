@@ -79,7 +79,7 @@ class TestApp {
       errEvtEl.removeEventListener('error', onError);
 
       // create video
-      ctx.videoSprite = new AlphaVideoSprite(texture);
+      ctx.videoSprite = new AlphaVideoSprite(texture, -1, false);
 
       // start it up!
       ctx.start.call(ctx);

@@ -4,7 +4,7 @@ const VideoMaskFilter = require('./VideoMaskFilter');
 
 
 class AlphaVideoSprite extends PIXI.Sprite {
-  constructor(videoFullTexture, autoUpdateVideoTexture) {
+  constructor(videoFullTexture, filterPadding, autoUpdateVideoTexture) {
 
     super();
 
@@ -22,7 +22,7 @@ class AlphaVideoSprite extends PIXI.Sprite {
     this._srcEl.loop = true;
 
     this.setup(autoUpdateVideoTexture);
-    this.setFilter();
+    this.setFilter(filterPadding);
     this.shimScaleCallback();
   }
 
@@ -48,8 +48,11 @@ class AlphaVideoSprite extends PIXI.Sprite {
 
   }
 
-  setFilter() {
+  setFilter(filterPadding) {
     var filter = new VideoMaskFilter(this, this.maskSprite);
+
+    if (filterPadding)
+      filter.padding = filterPadding;
 
     this.filter = filter;
     this.filters = [this.filter];
