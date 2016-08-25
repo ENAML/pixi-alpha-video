@@ -63,11 +63,25 @@ class AlphaVideoSprite extends PIXI.Sprite {
   }
 
   setFilter(filterPadding) {
-    this.mask = this.maskSprite;
+
+    var filter = new PIXI.SpriteMaskFilter(this.maskSprite);
+
+    if (filterPadding)
+      filter.padding = filterPadding;
+
+    this.filter = filter;
+    this.filters = [this.filter];
+    
+    return filter;
   }
 
   removeFilter() {
+    var filter = this.sprite.filter;
 
+    this.filters = null;
+    this.filter = null;
+
+    return filter;
   }
 
   // 
@@ -84,11 +98,11 @@ class AlphaVideoSprite extends PIXI.Sprite {
 
     this._maskedCtx.drawImage(video, 0, 0, width, height, 0, 0,
       this._maskedCanvas.width, this._maskedCanvas.height);
-    this.texture.baseTexture.update();
+    this.texture.update();
 
     this._maskCtx.drawImage(video, 0, height, width, height, 0, 0,
       this._maskCanvas.width, this._maskCanvas.height);
-    this.maskTexture.baseTexture.update();
+    this.maskTexture.update();
   }
 
   // 
