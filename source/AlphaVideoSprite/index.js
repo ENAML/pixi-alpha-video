@@ -49,6 +49,7 @@ class AlphaVideoSprite extends PIXI.Sprite {
   }
 
   setFilter(filterPadding) {
+    console.log(filterPadding);
     var filter = new VideoMaskFilter(this, this.maskSprite);
 
     if (filterPadding)
