@@ -11,6 +11,7 @@ const CONFIG = {
   videoUrl: '/videos/claw_medium_test.mp4', //'/videos/compressed.mp4',
   verticalPadding: 0,
   videoAlpha: 1,
+  backgroundColor: 0x000000,
 }
 
 const BG_COLORS = [
@@ -28,6 +29,7 @@ class TestApp {
   constructor() {
 
     // init vars
+    this.hasStarted = false;
     this.videoSprite = null;
 
     // get screen dimensions
@@ -47,6 +49,7 @@ class TestApp {
 
     // create stage
     this.stage = new PIXI.Container();
+    this.stage.interactiveChildren = false;
 
     // bind run loop
     this.proxyTick = this.tick.bind(this);
@@ -58,7 +61,10 @@ class TestApp {
     this.listen();
   }
 
-  loadVideo(done) {
+  loadVideo() {
+
+    // destroy old video if it existed
+    this.destroyVideo();
 
     // create texture (and begin loading asset)
     var texture = PIXI.Texture.fromVideoUrl(CONFIG.videoUrl);
@@ -100,6 +106,22 @@ class TestApp {
     errEvtEl.addEventListener('error', onError);
   }
 
+  destroyVideo() {
+
+    for (var i in this.stage.children)
+    {
+      var child = this.stage.children[i];
+      if (child instanceof AlphaVideoSprite)
+      {
+        var videoSprite = this.stage.removeChild(this.videoSprite);
+        if (videoSprite)
+          videoSprite.destroy(true);
+      }
+    }
+
+    this.videoSprite = null;
+  }
+
   listen() {
     var ctx = this;
 
@@ -110,18 +132,6 @@ class TestApp {
     this.renderer.view.addEventListener('click', (e) => {
       ctx.setBackgroundColor.call(ctx);
     });
-    document.body.addEventListener('keydown', (e) => {
-      var keyCode = e.keyCode;
-
-      if (keyCode === 66) // `b` for `black`
-      {
-        ctx.setBackgroundColor.call(ctx, 0x000000);
-      }
-      else if (keyCode === 87) // `w` for `white`
-      {
-        ctx.setBackgroundColor.call(ctx, 0xffffff);
-      }
-    })
   }
 
   resize() {
@@ -170,9 +180,23 @@ class TestApp {
     this.background.lineStyle(1, 0xffffff, 0);
     this.background.drawRect(0, 0, this.screen.w, this.screen.h);
     this.background.endFill();
+
+    CONFIG.backgroundColor = this.backgroundColor;
+    if (window.guiController && window.guiController.backgroundColor)
+      window.guiController.backgroundColor.updateDisplay()
   }
 
   start() {
+
+    // if already running, just add video
+    if (this.hasStarted) {
+      this.stage.addChild(this.videoSprite);
+      return this.resize();
+    }
+
+    console.log('starting up');
+
+    this.hasStarted = true;
 
     // create background
     this.background = new PIXI.Graphics();
@@ -193,7 +217,8 @@ class TestApp {
   tick() {
     requestAnimationFrame(this.proxyTick);
 
-    this.videoSprite.update();
+    if (this.videoSprite)
+      this.videoSprite.update();
 
     this.renderer.render(this.stage);
   }
@@ -216,22 +241,37 @@ function getRandomColor(toHexString) {
 
 class GuiController {
   constructor() {
-    this.gui = new dat.GUI();
+    this.gui = new dat.GUI({
+      // autoPlace: false,
+      width: window.innerWidth / 4,
+    });
   }
 
   // called when video loads
   init(testApp) {
 
-    this.gui.add(CONFIG, 'videoAlpha', 0, 1)
-    .onChange((val) => {
+    this.videoUrl = this.gui.add(CONFIG, 'videoUrl');
+    this.videoUrl.onChange((val) => {
+
+      testApp.loadVideo();
+    });
+
+    this.videoAlpha = this.gui.add(CONFIG, 'videoAlpha', 0, 1);
+    this.videoAlpha.onChange((val) => {
 
       testApp.videoSprite.alpha = val;
     });
 
-    this.gui.add(CONFIG, 'verticalPadding', 0, 500)
-    .onChange((val) => {
+    this.verticalPadding = this.gui.add(CONFIG, 'verticalPadding', 0, 500);
+    this.verticalPadding.onChange((val) => {
 
       testApp.positionVideoSprite();
+    });
+
+    this.backgroundColor = this.gui.addColor(CONFIG, 'backgroundColor');
+    this.backgroundColor.onChange((val) => {
+      
+      testApp.setBackgroundColor(val);
     });
   }
 }
