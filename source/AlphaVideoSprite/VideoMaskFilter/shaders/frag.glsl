@@ -97,5 +97,6 @@ void main(void)
   /**
    * actual working version
    */
-  gl_FragColor = vec4(colorPx.rgb * alpha, alpha);
+  vec4 masked = colorPx * alpha;
+  gl_FragColor = masked;
 }

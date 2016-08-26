@@ -9,7 +9,7 @@ const AlphaVideoSprite = require('../../source/AlphaVideoSprite');
 
 const CONFIG = {
   videoUrl: '/videos/claw_medium_test.mp4', //'/videos/compressed.mp4',
-  verticalPadding: 200,
+  verticalPadding: 0,
   videoAlpha: 1,
 }
 
@@ -226,6 +226,12 @@ class GuiController {
     .onChange((val) => {
 
       testApp.videoSprite.alpha = val;
+    });
+
+    this.gui.add(CONFIG, 'verticalPadding', 0, 500)
+    .onChange((val) => {
+
+      testApp.positionVideoSprite();
     });
   }
 }
